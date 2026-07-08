@@ -65,26 +65,39 @@ class DemoSeeder extends Seeder
 
     private function seedRoleAndPermissions(): array
     {
-        // Deliberately NOT granting reports.financial/reports.clinical/clinical_notes.create:
-        // those permissions also gate a few menu items in the out-of-scope "Báo cáo" and
-        // "Nha khoa chuyên sâu" groups (Sidebar.vue shows a group if ANY of its items are
-        // visible), so granting them would leak those groups into the demo sidebar even
-        // though menuConfig.js/routes.php were never touched. treatment_plans.edit has the
-        // same overlap (it also gates one "Nha khoa chuyên sâu" item), but it's essential
-        // for the in-scope Điều trị section (adding/editing plan items) so that one small
-        // leak — a single extra item under an otherwise-empty group header — is accepted.
+        // Full admin: the demo login should see and do everything, so every permission
+        // referenced anywhere in routes/web.php, controller authorize()/can() calls, and
+        // menuConfig.js is granted. Role is named "admin" (not "Demo") because a few
+        // controllers (DashboardController, FollowUpTaskController, KpiAllocationController)
+        // hard-code hasRole(['owner', 'admin']) checks that permissions alone can't satisfy.
         $permissions = [
-            'patients.view', 'patients.create', 'patients.edit', 'patients.delete',
+            'admin', 'admin.audit_log', 'admin.roles', 'admin.users',
+            'accounting.view', 'accounting.manage',
             'appointments.view', 'appointments.create', 'appointments.manage',
-            'treatment_plans.view', 'treatment_plans.create', 'treatment_plans.edit', 'treatment_plans.approve',
+            'branches.view', 'branches.manage',
             'cashier.view', 'cashier.manage', 'cashier.approve_discount', 'cashier.approve_refund',
+            'clinical_notes.create',
+            'commissions.view', 'commissions.manage',
+            'dental.view', 'dental.manage', 'dental.kpi.view', 'dental.kpi.manage',
+            'employees.view', 'employees.manage',
+            'expenses.view', 'expenses.manage',
+            'fixed_assets.view', 'fixed_assets.manage',
+            'hkd.view', 'hkd.manage',
+            'inventory.view', 'inventory.manage',
+            'labo.view', 'labo.manage',
+            'leads.view', 'leads.manage', 'leads.assign', 'leads.create',
+            'patients.view', 'patients.create', 'patients.edit', 'patients.delete',
+            'reports.view', 'reports.financial', 'reports.clinical',
+            'services.view', 'services.manage',
+            'settings.view', 'settings.manage',
+            'treatment_plans.view', 'treatment_plans.create', 'treatment_plans.edit', 'treatment_plans.approve',
         ];
 
         foreach ($permissions as $name) {
             Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
         }
 
-        $role = Role::firstOrCreate(['name' => 'Demo', 'guard_name' => 'web']);
+        $role = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $role->syncPermissions($permissions);
 
         return [$role];
