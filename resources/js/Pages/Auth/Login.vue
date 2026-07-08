@@ -27,6 +27,15 @@ const submit = () => {
         onFinish: () => form.reset('password'),
     });
 };
+
+const DEMO_EMAIL = 'demo@dentalerp.test';
+const DEMO_PASSWORD = 'Demo@12345';
+
+const loginAsDemo = () => {
+    form.email = DEMO_EMAIL;
+    form.password = DEMO_PASSWORD;
+    submit();
+};
 </script>
 
 <template>
@@ -35,6 +44,28 @@ const submit = () => {
 
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
+        </div>
+
+        <div class="mb-5 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3">
+            <p class="text-sm font-semibold text-indigo-900">Tài khoản Demo</p>
+            <p class="text-xs text-indigo-700 mt-0.5">{{ DEMO_EMAIL }} / {{ DEMO_PASSWORD }}</p>
+            <button
+                type="button"
+                @click="loginAsDemo"
+                :disabled="form.processing"
+                class="mt-2.5 w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors disabled:opacity-50"
+            >
+                {{ form.processing ? 'Đang đăng nhập...' : 'Đăng nhập bằng tài khoản Demo' }}
+            </button>
+        </div>
+
+        <div class="relative mb-5">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-200"></div>
+            </div>
+            <div class="relative flex justify-center text-xs">
+                <span class="bg-white px-2 text-gray-400">hoặc đăng nhập thủ công</span>
+            </div>
         </div>
 
         <form @submit.prevent="submit">
